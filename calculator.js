@@ -6,6 +6,20 @@ function calculate() {
 	var loanTerm = document.getElementById("loanTerm").value;
 	var paymentFrequency = document.getElementById("paymentFrequency").value;
 	var startDate = document.getElementById("startDate").value;
+	
+	// Validate input values
+	if (!loanAmount) {
+		alert("Please enter the loan amount.");
+		return;
+	}
+	if (!interestRate) {
+		alert("Please enter the interest rate.");
+		return;
+	}
+	if (!loanTerm) {
+		alert("Please enter the loan term.");
+		return;
+	}
 
 	// Convert interest rate to monthly rate
 	var monthlyRate = interestRate / 1200;
