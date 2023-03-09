@@ -1,12 +1,12 @@
-// JavaScript source code
 function calculate() {
 	// Get input values
+	document.getElementById("paymentScheduleWrapper").style.display = "block";
 	var loanAmount = document.getElementById("loanAmount").value;
 	var interestRate = document.getElementById("interestRate").value;
 	var loanTerm = document.getElementById("loanTerm").value;
 	var paymentFrequency = document.getElementById("paymentFrequency").value;
 	var startDate = document.getElementById("startDate").value;
-	
+
 	// Validate input values
 	if (!loanAmount) {
 		alert("Please enter the loan amount.");
@@ -104,4 +104,117 @@ function calculate() {
 	for (var i = rowLimit; i < tableRows.length; i++) {
 		tableRows[i].style.display = "none";
 	}
+}
+// Encrypt data using AES encryption
+function encryptData(data, password) {
+  var encryptedData;
+  try {
+    var salt = CryptoJS.lib.WordArray.random(128/8); // generate random salt
+    var key = CryptoJS.PBKDF2(password, salt, { keySize: 256/32 }); // derive key from password and salt
+    var iv = CryptoJS.lib.WordArray.random(128/8); // generate random IV
+    encryptedData = CryptoJS.AES.encrypt(data, key, { iv: iv }).toString() + ":" + salt.toString() + ":" + iv.toString(); // concatenate ciphertext, salt, and IV
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+  return encryptedData;
+}
+// Encrypt and save data to local storage
+function saveData() {
+  // Get input values
+  var loanAmount = document.getElementById("loanAmount").value;
+  var interestRate = document.getElementById("interestRate").value;
+  var loanTerm = document.getElementById("loanTerm").value;
+  var paymentFrequency = document.getElementById("paymentFrequency").value;
+  var startDate = document.getElementById("startDate").value;
+
+  // Check if any input is empty
+  if (!loanAmount || !interestRate || !loanTerm || !paymentFrequency || !startDate) {
+    alert("Please fill out all fields.");
+    return;
+  }
+
+  // Create data object
+  var data = {
+    loanAmount: loanAmount,
+    interestRate: interestRate,
+    loanTerm: loanTerm,
+    paymentFrequency: paymentFrequency,
+    startDate: startDate
+  };
+
+  // Get user password
+  var password = prompt("Please enter a password to protect your data:");
+
+  // Encrypt data and save to local storage
+  var encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), password).toString();
+  localStorage.setItem("mortgageData", encryptedData);
+  alert("Data saved successfully.");
+}
+
+// Load and decrypt data from local storage
+function loadData() {
+  // Get user password
+  var password = prompt("Please enter your password to access your data:");
+
+  // Load data from local storage
+  var encryptedData = localStorage.getItem("mortgageData");
+
+  // Check if data is empty
+  if (!encryptedData) {
+    alert("No saved data found.");
+    return;
+  }
+
+  // Decrypt data using user password
+  try {
+    var decryptedData = CryptoJS.AES.decrypt(encryptedData, password).toString(CryptoJS.enc.Utf8);
+  } catch (err) {
+    console.error(err);
+    alert("Incorrect password. Please try again.");
+    return;
+  }
+
+  // Parse decrypted data and set input values
+  var data = JSON.parse(decryptedData);
+  document.getElementById("loanAmount").value = data.loanAmount;
+  document.getElementById("interestRate").value = data.interestRate;
+  document.getElementById("loanTerm").value = data.loanTerm;
+  document.getElementById("paymentFrequency").value = data.paymentFrequency;
+  document.getElementById("startDate").value = data.startDate;
+  calculate();
+  alert("Data loaded successfully.");
+}
+function exportToCSV() {
+  var csvRows = [];
+  var headers = ["Date", "Payment Amount", "Principal", "Interest", "Balance"];
+  var paymentSchedule = document.getElementById("paymentSchedule").getElementsByTagName("tbody")[0];
+
+  // Push header row to csvRows
+  csvRows.push(headers.join(","));
+
+  // Loop through payment schedule table rows and push to csvRows
+  for (var i = 0; i < paymentSchedule.rows.length; i++) {
+    var rowData = [];
+    var row = paymentSchedule.rows[i];
+
+    for (var j = 0; j < row.cells.length; j++) {
+      rowData.push(row.cells[j].innerText);
+    }
+
+    csvRows.push(rowData.join(","));
+  }
+
+  // Join csvRows with new line separator
+  var csvString = csvRows.join("\n");
+
+  // Encode the CSV data as a URI
+  var encodedCSV = encodeURIComponent(csvString);
+  var dataUri = "data:text/csv;charset=utf-8," + encodedCSV;
+
+  // Create mailto link with CSV data URI as the body
+  var mailtoLink = "mailto:recipient@example.com?subject=Payment Schedule&body=" + encodedCSV;
+
+  // Open the mailto link in the current tab
+  window.location.href = mailtoLink;
 }
