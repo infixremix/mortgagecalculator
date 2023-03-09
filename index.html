@@ -6,60 +6,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="save.js"></script>
+    <script src="export.js"></script>
     <script src="calculator.js"></script>
+    <style>
+    #paymentScheduleWrapper {
+      display: none;
+    }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row">
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <h2>Mortgage Calculator</h2>
+            <form>
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount (£)</label>
+                    <input type="number" class="form-control" id="loanAmount" placeholder="Enter loan amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%)</label>
+                    <input type="number" class="form-control" id="interestRate" placeholder="Enter interest rate" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="loanTerm">Loan Term (years)</label>
+                    <input type="number" class="form-control" id="loanTerm" placeholder="Enter loan term" required>
+                </div>
+                <div class="form-group">
+                    <label for="paymentFrequency">Payment Frequency</label>
+                    <select class="form-control" id="paymentFrequency">
+                        <option value="monthly">Monthly</option>
+                        <option value="biweekly">Bi-Weekly</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" class="form-control" id="startDate" placeholder="Enter start date" required>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="calculate()">Calculate</button>
+                <button type="button" class="btn btn-primary" onclick="loadData() ">Load Data</button>
+                <button type="button" class="btn btn-primary" onclick="saveData() ">Save Data</button>
+                <button onclick="exportToCSV()">Export to CSV</button>
+            </form>
+            <div id="totalPayments"></div>
+        </div>
+        <div id="paymentScheduleWrapper" style="display:none;">
             <div class="col-lg-6">
-                <h2>Mortgage Calculator</h2>
-                <form>
-                    <div class="form-group">
-                        <label for="loanAmount">Loan Amount (£)</label>
-                        <input type="number" class="form-control" id="loanAmount" placeholder="Enter loan amount" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="interestRate">Interest Rate (%)</label>
-                        <input type="number" class="form-control" id="interestRate" placeholder="Enter interest rate" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loanTerm">Loan Term (years)</label>
-                        <input type="number" class="form-control" id="loanTerm" placeholder="Enter loan term" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="paymentFrequency">Payment Frequency</label>
-                        <select class="form-control" id="paymentFrequency">
-                            <option value="monthly">Monthly</option>
-                            <option value="biweekly">Bi-Weekly</option>
-                            <option value="weekly">Weekly</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="startDate">Start Date</label>
-                        <input type="date" class="form-control" id="startDate" placeholder="Enter start date" required>
-                    </div>
-                    <button type="button" class="btn btn-primary" onclick="calculate()">Calculate</button>
-                </form>
-            </div>
-            <div class="col-lg-6">
-                <h2>Payment Schedule</h2>
                 <table class="table table-striped" id="paymentSchedule">
+                    <h2>Payment Schedule</h2>
                     <thead>
-                        <tr>
-                            <th>Payment Date</th>
-                            <th>Payment Amount (£)</th>
-                            <th>Principal Paid (£)</th>
-                            <th>Interest Paid (£)</th>
-                            <th>Balance (£)</th>
-                        </tr>
+                    <tr>
+                        <th>Payment Date</th>
+                        <th>Payment Amount (£)</th>
+                        <th>Principal Paid (£)</th>
+                        <th>Interest Paid (£)</th>
+                        <th>Balance (£)</th>
+                    </tr>
                     </thead>
                     <tbody>
                     </tbody>
                 </table>
                 <div id="totalPayments"></div>
-                <div id="mortgageEstimate"></div>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
