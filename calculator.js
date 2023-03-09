@@ -212,9 +212,16 @@ function exportToCSV() {
   var encodedCSV = encodeURIComponent(csvString);
   var dataUri = "data:text/csv;charset=utf-8," + encodedCSV;
 
-  // Create mailto link with CSV data URI as the body
-  var mailtoLink = "mailto:recipient@example.com?subject=Payment Schedule&body=" + encodedCSV;
-
-  // Open the mailto link in the current tab
-  window.location.href = mailtoLink;
+  if (navigator.share) { // Check if Web Share API is available
+    navigator.share({
+      title: 'Payment Schedule',
+      text: 'Here is your payment schedule:',
+      url: dataUri
+    })
+    .then(() => console.log('Successfully shared payment schedule.'))
+    .catch((error) => console.log('Error sharing payment schedule:', error));
+  } else { // If Web Share API is not available, fall back to mailto function
+    var mailtoLink = "mailto:recipient@example.com?subject=Payment Schedule&body=" + encodedCSV;
+    window.location.href = mailtoLink;
+  }
 }
